@@ -8,7 +8,7 @@ function Book(title, author, pages, read) {
     this.title = title
     this.author = author
     this.pages = pages
-    this.read = read
+    this.read = read;
     // this.info = function() {
         //     return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`
         // }
@@ -17,10 +17,28 @@ function Book(title, author, pages, read) {
 Book.prototype.info = function() {
         return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`
 }
-    
+
+let readButton;
+
+Book.prototype.toggleRead = function() {
+        if (this.read === 'read') {
+            this.read = 'not read yet';
+        } else if (this.read === 'not read yet') {
+            this.read = 'read';
+        }
+}
+
+
+
 //function to take in user's input to create a new book and add to myLibrary array
     
 function addBookToLibrary(userTitle, userAuthor, userPages, userRead) {
+    console.log(userRead);
+    if (userRead === true) {
+        userRead = 'read';
+    } else {
+        userRead = 'not read yet'
+    }
     let userBook = new Book(userTitle, userAuthor, userPages, userRead);
     myLibrary.push(userBook);
 }
@@ -59,6 +77,12 @@ function createCard(title, author, pages, read, arrayIndex) {
     closeButton.setAttribute('class', 'remove');
     closeButton.textContent = 'Remove';
     card.appendChild(closeButton);
+
+    const readButton = document.createElement('button');
+    readButton.setAttribute('class', 'read_button');
+    readButton.value = 'read';
+    readButton.textContent = 'Read?';
+    card.appendChild(readButton);
     
     const index = document.createElement('p');
     index.textContent = arrayIndex;
@@ -89,6 +113,7 @@ function createLibrary(array) {
     })
 
     initializeRemoveButton();
+    initializeReadButton();
 }
 
 //initialize remove button
@@ -110,6 +135,22 @@ function initializeRemoveButton() {
 function removeBook(index) {
     myLibrary.splice(index, 1);
     createLibrary(myLibrary);
+}
+
+//initialize read button
+
+function initializeReadButton() {
+    readButton = document.querySelectorAll('.read_button');
+    //console.log(readButton);
+    readButton.forEach(button => {
+        button.addEventListener('click', (event) => {
+            let arrayIndex = event.originalTarget.parentElement.id;
+            //console.log(myLibrary[arrayIndex].read);
+            myLibrary[arrayIndex].toggleRead();
+            //console.log(myLibrary[arrayIndex].read);
+            createLibrary(myLibrary);
+        })
+    })
 }
 
 
@@ -142,7 +183,8 @@ function handleUserInput() {
     const titleValue = document.getElementById('title').value;
     const authorValue = document.getElementById('author').value;
     const pagesValue = document.getElementById('pages').value;
-    const readValue = document.getElementById('read').value;
+    const readValue = document.getElementById('read').checked;
+    console.log(readValue);
 
     addBookToLibrary(titleValue, authorValue, pagesValue, readValue);
     createLibrary(myLibrary);
